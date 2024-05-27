@@ -11,11 +11,11 @@ This project uses an ESP32 to monitor and manage plant health by measuring soil 
 
 ## Components
 - **ESP32**: The main microcontroller used for reading sensors and controlling the pump.
-- **Soil Moisture Sensor**: Used to detect the moisture level in the soil.
-- **Temperature Sensor**: Used to measure the ambient temperature.
-- **Light Intensity Sensor**: Used to measure the light intensity.
-- **LCD Display**: Used to display sensor readings and system status.
-- **Water Pump**: Used to water the plant automatically.
+- **Soil Moisture Sensor**: YL-69
+- **Temperature Sensor**: KY001
+- **Light Intensity Sensor**: BH1750
+- **LCD Display**: 2x16 LCD Screen with I2C Interface
+- **Water Pump**: Mini Submersible Water Pump (6V, 120 L/hour)
 
 ## Circuit Diagram
 Include a diagram or description of how to connect the components to the ESP32. For example:
