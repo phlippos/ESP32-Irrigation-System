@@ -63,6 +63,10 @@ Contributions are welcome! Please fork the repository and create a pull request 
 ## Acknowledgments
 - Thanks to the open-source community for providing libraries and resources.
 - Inspired by various plant monitoring projects and tutorials available online.
-
+## Youtube link
+- https://www.youtube.com/watch?v=x7HJyYCU2ts&ab_channel=Bora%C3%96zkan
+## Web and Android Application GitHub links 
+- https://github.com/johnbtitor/WebPlant
+- https://github.com/johnbtitor/Plantdroid
 ## Contact
 For any questions or suggestions, feel free to open an issue or contact me at kilgicihangir@gmail.com.
