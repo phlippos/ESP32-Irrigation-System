@@ -4,6 +4,7 @@
 #include <LCD.h>
 #include <AsyncTCP.h>
 #include "ESPAsyncWebServer.h"
+#include "Pump.h"
 
 #define ONE_WIRE_BUS 15
 #define HUMIDITY 32
@@ -15,18 +16,19 @@
 const char* ssid = "SelaM";
 const char* password = "12345678.";
 
-unsigned long previousMillisHumidity = 0;
-unsigned long previousMillisTemperature = 0;
-int interval_humidity = 10000; // 10 seconds
-int interval_temperature = 5000; // 5 seconds
-float moisture_value = 0;
-float temperature_value = 0;
+unsigned long previousMillis = 0;
+int interval = 5000; // 5 seconds
+float moisture_value = 100.0;
+float temperature_value = 0.0;
+float light_intensity = 0.0;
 
 // Sensor objects
 Moisture moisture(HUMIDITY);
 Temperature temperature(ONE_WIRE_BUS , 0);
 Light light(18 , 19 , 0x23 , BH1750::CONTINUOUS_HIGH_RES_MODE);
 LCD lcd((uint8_t)39,(uint8_t)20,(uint8_t)2,"Hello :)");
+Pump pump(RELAY);
+
 
 // Web server and WebSocket
 AsyncWebServer server(80);
@@ -35,7 +37,8 @@ AsyncWebSocket ws("/ws");
 void f1() {
   if (!isnan(temperature_value) && !isnan(moisture_value)) {
     String json = "{\"temperature\":" + String(temperature_value) +
-                  ",\"humidity\":" + String(moisture_value) + "}";
+                  ",\"humidity\":" + String(moisture_value) + 
+                  ",\"light\":" + String(light_intensity) + "}";
     ws.textAll(json);
   }
 }
@@ -43,6 +46,7 @@ void f1() {
 void handleRoot(AsyncWebServerRequest *request) {
   String message = "Temperature: " + String(temperature.get_temp_C()) + " °C\n";
   message += "Humidity: " + String(moisture.get_moisture_percentage()) + " %\n";
+  message += "Light: " + String(light.get_light_intensity()) + " %\n";
   request->send(200, "text/plain", message);
 }
 
@@ -75,25 +79,24 @@ void setup() {
   
   light.begin();
   lcd.begin();
+  Serial.println("IP");
+  Serial.println(WiFi.localIP());
 }
 
 void loop() {
+
   unsigned long currentMillis = millis();
-  if ((currentMillis - previousMillisHumidity) >= interval_humidity) {
-    previousMillisHumidity = currentMillis;
+  if ((currentMillis - previousMillis) >= interval) {
+    previousMillis = currentMillis;
     moisture_value = moisture.get_moisture_percentage();
+    pump.pump_water(moisture_value,currentMillis);
     lcd.update_display(0,0,"Moi : " + (String)moisture_value + " %");
     moisture.print_sensor_value();
-    f1();
-  }
-  
-  if ((currentMillis - previousMillisTemperature) >= interval_temperature) {
-    previousMillisTemperature = currentMillis;
     temperature_value = temperature.get_temp_C();
     temperature.print_sensor_value();
     lcd.update_display(0,1,"Temp : " + (String)temperature_value + " C");
+    light_intensity = light.get_light_intensity();
+    light.print_light_intensity();
+    f1();
   }
- 
 }
-
-
